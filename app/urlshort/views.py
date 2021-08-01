@@ -7,6 +7,7 @@ import random, string
 # Predefined constant
 DOMAIN_NAME = 'http://127.0.0.1:8000/'
 
+
 # Create your views here.
 
 def home(request):
@@ -36,9 +37,9 @@ def createShortURL(request):
             while len(ShortURL.objects.filter(short_url=random_chars)) !=0:
                 random_chars = generate_hash()
             shorted_url = DOMAIN_NAME + random_chars
-            s = ShortURL(original_url=original_website, short_url=shorted_url, time_date_created=datetime.now())
+            s = ShortURL(original_url=original_website, short_url=random_chars, time_date_created=datetime.now())
             s.save()
-            return render(request, 'urlcreated.html', {'shorted_url': s.short_url})
+            return render(request, 'urlcreated.html', {'shorted_url': shorted_url})
     form = CreateNewShortURL()
     context = {'form': form}
     return render(request, 'create.html', context)
@@ -49,7 +50,6 @@ def redirect(request, url):
     '''
     # Later if want to change in hash generation
     # Modify this function only
-
     current_url = ShortURL.objects.filter(short_url=url)
     if len(current_url) <=0:
         return render(request, 'pagenotfound.html')
