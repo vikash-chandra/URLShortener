@@ -28,9 +28,9 @@ def createShortURL(request):
                 print("Already created...")
                 return render(request, 'urlcreated.html', {'url_code': original_website_exists[0].short_url})
 
-            random_chars = generate_MD5_hash()
+            random_chars = generate_hash()
             while len(ShortURL.objects.filter(short_url=random_chars)) !=0:
-                random_chars = generate_MD5_hash()
+                random_chars = generate_hash()
             s = ShortURL(original_url=original_website, short_url=random_chars, time_date_created=datetime.now())
             s.save()
         return render(request, 'urlcreated.html', {'url_code': s.short_url})
