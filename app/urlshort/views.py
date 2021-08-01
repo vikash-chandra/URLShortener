@@ -4,6 +4,9 @@ from .forms import CreateNewShortURL
 from datetime import datetime
 import random, string
 
+# Predefined constant
+DOMAIN_NAME = 'http://127.0.0.1:8000/'
+
 # Create your views here.
 
 def home(request):
@@ -26,14 +29,16 @@ def createShortURL(request):
             original_website_exists = ShortURL.objects.filter(original_url=original_website)
             if len(original_website_exists)>0:
                 print("Already created...")
-                return render(request, 'urlcreated.html', {'url_code': original_website_exists[0].short_url})
+                shorted_url = DOMAIN_NAME + original_website_exists[0].short_url
+                return render(request, 'urlcreated.html', {'shorted_url': shorted_url})
 
-            random_chars = generate_MD5_hash()
+            random_chars = generate_hash()
             while len(ShortURL.objects.filter(short_url=random_chars)) !=0:
-                random_chars = generate_MD5_hash()
-            s = ShortURL(original_url=original_website, short_url=random_chars, time_date_created=datetime.now())
+                random_chars = generate_hash()
+            shorted_url = DOMAIN_NAME + random_chars
+            s = ShortURL(original_url=original_website, short_url=shorted_url, time_date_created=datetime.now())
             s.save()
-        return render(request, 'urlcreated.html', {'url_code': s.short_url})
+            return render(request, 'urlcreated.html', {'shorted_url': s.short_url})
     form = CreateNewShortURL()
     context = {'form': form}
     return render(request, 'create.html', context)
