@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.core.cache import cache
 from .models import ShortURL
 from .forms import CreateNewShortURL
 from datetime import datetime
 import random, string
+
 
 # Predefined constant
 DOMAIN_NAME = 'http://127.0.0.1:8000/'
@@ -39,6 +41,8 @@ def createShortURL(request):
             shorted_url = DOMAIN_NAME + random_chars
             s = ShortURL(original_url=original_website, short_url=random_chars, time_date_created=datetime.now())
             s.save()
+            cache.set(random_chars, original_website)
+            print("Cache inserted: ", random_chars, original_website)
             return render(request, 'urlcreated.html', {'shorted_url': shorted_url})
     form = CreateNewShortURL()
     context = {'form': form}
@@ -50,6 +54,12 @@ def redirect(request, url):
     '''
     # Later if want to change in hash generation
     # Modify this function only
+    orgUrl = cache.get(url)
+    if orgUrl:
+        context = {'obj':{'original_url':orgUrl}}
+        print("Returned from stored cache")
+        return render(request, 'redirect.html', context)
+
     current_url = ShortURL.objects.filter(short_url=url)
     if len(current_url) <=0:
         return render(request, 'pagenotfound.html')
