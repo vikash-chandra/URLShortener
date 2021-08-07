@@ -12,3 +12,5 @@
 8. Click on 'Create URL'
 9. Now short URL is generated.
 10. GO to short URL and click 'Go To Website'.
+# Docker image
+1. docker pull vikash11/url-short-app
